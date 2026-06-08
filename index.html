@@ -22,7 +22,7 @@
       /* Bouncing cat styling */
       .bouncing-cat {
         position: fixed;
-        width: 100px; 
+        width: 80px; 
         height: auto;
         z-index: 9998;
         cursor: pointer;
@@ -65,9 +65,9 @@
       /* Visual laser beam ray effect */
       .laser-beam {
         position: fixed;
-        top: 30px;
-        right: 30px;
-        height: 3px;
+        top: 50px;
+        right: 50px;
+        height: 4px;
         background: #ff4757;
         box-shadow: 0 0 8px #ff4757, 0 0 15px #ff4757;
         z-index: 9999;
@@ -117,36 +117,35 @@
       let isLaserMode = false;
       const laserToggle = document.getElementById('laser-toggle');
 
+      // Embedded Base64 Data String for a pixel cat (Guaranteed to load instantly everywhere)
+      const catImageSrc = "data:image/gif;base64,R0lGODlhKAAoAIABAAAAAP///yH5BAEAAAEALAAAAAAoACgAAAJGjI+py+0Po5y02ouz3rz7D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Qi8YhcMpvMJnPZbDqf0Kj0Sq1ar9is9osFADs=";
+
       // Synthesize an electronic "meow" sound using standard Web Audio API
       function playSyntheticMeow() {
         try {
           const AudioContext = window.AudioContext || window.webkitAudioContext;
           const ctx = new AudioContext();
-          
-          // Main pitch oscillator
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           
           osc.type = 'triangle'; 
-          
-          // "Me-ow" pitch inflection bend (starts high, drops, curves back slightly)
           const now = ctx.currentTime;
-          osc.frequency.setValueAtTime(400, now);
-          osc.frequency.exponentialRampToValueAtTime(750, now + 0.08); // "Mee"
-          osc.frequency.exponentialRampToValueAtTime(300, now + 0.25); // "oww"
           
-          // Volume envelope profile
+          osc.frequency.setValueAtTime(400, now);
+          osc.frequency.exponentialRampToValueAtTime(800, now + 0.1); 
+          osc.frequency.exponentialRampToValueAtTime(300, now + 0.3); 
+          
           gain.gain.setValueAtTime(0, now);
-          gain.gain.linearRampToValueAtTime(0.3, now + 0.05);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+          gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
           
           osc.connect(gain);
           gain.connect(ctx.destination);
           
           osc.start(now);
-          osc.stop(now + 0.35);
+          osc.stop(now + 0.3);
         } catch (e) {
-          console.log("Audio play blocked or unsupported by browser execution settings.");
+          console.log("Audio blocked by browser.");
         }
       }
 
@@ -155,7 +154,6 @@
         const beam = document.createElement('div');
         beam.className = 'laser-beam';
         
-        // Origin point coordinates fixed at the toggle badge positioning 
         const originX = window.innerWidth - 50; 
         const originY = 50;
 
@@ -180,9 +178,9 @@
         document.body.appendChild(burn);
       }
 
-      // Toggle weapon utility configurations
+      // Toggle laser weapon state
       laserToggle.addEventListener('click', (e) => {
-        e.stopPropagation(); // Stop click from accidentally shooting immediately
+        e.stopPropagation(); 
         isLaserMode = !isLaserMode;
         if (isLaserMode) {
           laserToggle.classList.add('active');
@@ -199,34 +197,32 @@
       class CatSpawner {
         constructor(startX = null, startY = null) {
           this.element = document.createElement('img');
-          this.element.src = 'cat.gif';
-          this.element.alt = 'Dancing Cat';
+          this.element.src = catImageSrc;
+          this.element.alt = 'Cat';
           this.element.className = 'bouncing-cat';
           
           this.posX = startX !== null ? startX : Math.random() * (window.innerWidth - 100);
           this.posY = startY !== null ? startY : Math.random() * (window.innerHeight - 100);
           
-          this.speedX = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
-          this.speedY = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
+          this.speedX = (Math.random() * 3 + 2) * (Math.random() < 0.5 ? 1 : -1);
+          this.speedY = (Math.random() * 3 + 2) * (Math.random() < 0.5 ? 1 : -1);
 
           this.element.style.left = this.posX + 'px';
           this.element.style.top = this.posY + 'px';
 
           this.element.addEventListener('click', (e) => {
             if (isLaserMode) {
-              e.stopPropagation(); // Don't trigger standard body interaction clicks
+              e.stopPropagation(); 
               
               const clickX = e.clientX;
               const clickY = e.clientY;
 
-              // Action chain: Fire, Synthesize Audio, Destroy Cat, Leave Scar
               drawLaserBeam(clickX, clickY);
               playSyntheticMeow();
               createBurnMark(clickX, clickY);
               
-              this.element.remove(); // Vaporize cat!
+              this.element.remove(); 
             } else {
-              // Standard behavior: Multiply cat instances when clicked outside weapon mode
               new CatSpawner(this.posX, this.posY);
             }
           });
@@ -237,10 +233,10 @@
 
         animate() {
           const move = () => {
-            if (!this.element.parentNode) return; // Stop animation loop if cat was shot
+            if (!this.element.parentNode) return; 
 
-            const catWidth = this.element.offsetWidth || 100;
-            const catHeight = this.element.offsetHeight || 100;
+            const catWidth = this.element.offsetWidth || 80;
+            const catHeight = this.element.offsetHeight || 80;
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
 
