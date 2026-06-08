@@ -11,26 +11,25 @@
         margin: 0 auto; 
         padding: 20px; 
         background: #f5f5f5; 
-        /* Prevents the bouncing cat from creating accidental scrollbars */
-        overflow-x: hidden; 
+        /* Prevents multiplying cats from creating accidental scrollbars */
+        overflow: hidden; 
       }
       h1   { color: #1F4E79; }
       h2   { color: #2E75B6; border-bottom: 2px solid #2E75B6; }
       p    { line-height: 1.6; }
 
-      /* Styles for the bouncing cat GIF */
-      #bouncing-cat {
+      /* Styles for the bouncing cat class */
+      .bouncing-cat {
         position: fixed;
         width: 100px; /* Adjust size of the cat here */
         height: auto;
         z-index: 9999;
-        pointer-events: none; /* Let clicks pass right through the cat */
+        cursor: pointer; /* Changes mouse to a pointer hand so users know they can click it */
+        user-select: none; /* Prevents text-selection highlighting while rapidly clicking */
       }
     </style>
   </head>
   <body>
-    <!-- Bouncing Cat Element (Updated to a local file path) -->
-    <img id="bouncing-cat" src="cat.gif" alt="Dancing Cat">
 
     <h1>Hi, I'm Victor Aguilar!</h1>
  
@@ -48,55 +47,73 @@
       <a href="https://github.com"> VICTOR0240 </a>
     </p>
 
-    <!-- Physics logic to handle screen boundary collisions -->
+    <!-- Multi-Cat Physics Logic -->
     <script>
-      const cat = document.getElementById('bouncing-cat');
-      
-      // Starting positions
-      let posX = Math.random() * (window.innerWidth - 100);
-      let posY = Math.random() * (window.innerHeight - 100);
-      
-      // Speed and direction multipliers (change numbers to make it faster/slower)
-      let speedX = 2;
-      let speedY = 2;
+      // Class to manage independent physics for each cat instance
+      class CatSpawner {
+        constructor(startX = null, startY = null) {
+          this.element = document.createElement('img');
+          this.element.src = 'cat.gif';
+          this.element.alt = 'Dancing Cat';
+          this.element.className = 'bouncing-cat';
+          
+          // Set initial spawn coordinates or choose random if none provided
+          this.posX = startX !== null ? startX : Math.random() * (window.innerWidth - 100);
+          this.posY = startY !== null ? startY : Math.random() * (window.innerHeight - 100);
+          
+          // Set random speed trajectories so they scatter instantly
+          this.speedX = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
+          this.speedY = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
 
-      function moveCat() {
-        const catWidth = cat.offsetWidth;
-        const catHeight = cat.offsetHeight;
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
+          // Render initial positions immediately
+          this.element.style.left = this.posX + 'px';
+          this.element.style.top = this.posY + 'px';
 
-        // Update positions
-        posX += speedX;
-        posY += speedY;
+          // Click event to spawn a clone right at the current cat's location
+          this.element.addEventListener('click', (e) => {
+            // Spawn an extra cat at the click point
+            new CatSpawner(this.posX, this.posY);
+          });
 
-        // Bounce off left or right edges
-        if (posX + catWidth >= screenWidth || posX <= 0) {
-          speedX = -speedX;
-          // Ensure it doesn't get stuck outside bounds if resized
-          posX = Math.max(0, Math.min(posX, screenWidth - catWidth)); 
+          document.body.appendChild(this.element);
+          this.animate();
         }
 
-        // Bounce off top or bottom edges
-        if (posY + catHeight >= screenHeight || posY <= 0) {
-          speedY = -speedY;
-          posY = Math.max(0, Math.min(posY, screenHeight - catHeight));
+        animate() {
+          const move = () => {
+            const catWidth = this.element.offsetWidth || 100;
+            const catHeight = this.element.offsetHeight || 100;
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+
+            this.posX += this.speedX;
+            this.posY += this.speedY;
+
+            // Bounce off left/right walls
+            if (this.posX + catWidth >= screenWidth || this.posX <= 0) {
+              this.speedX = -this.speedX;
+              this.posX = Math.max(0, Math.min(this.posX, screenWidth - catWidth)); 
+            }
+
+            // Bounce off top/bottom walls
+            if (this.posY + catHeight >= screenHeight || this.posY <= 0) {
+              this.speedY = -this.speedY;
+              this.posY = Math.max(0, Math.min(this.posY, screenHeight - catHeight));
+            }
+
+            this.element.style.left = this.posX + 'px';
+            this.element.style.top = this.posY + 'px';
+
+            requestAnimationFrame(move);
+          };
+          requestAnimationFrame(move);
         }
-
-        // Render the new coordinates smoothly
-        cat.style.left = posX + 'px';
-        cat.style.top = posY + 'px';
-
-        requestAnimationFrame(moveCat);
       }
 
-      // Initialize movement once the image loads completely
-      cat.onload = function() {
-        moveCat();
-      };
-      
-      // Fallback in case it's already cached
-      if (cat.complete) moveCat();
+      // Spawn the very first cat automatically when the script loads
+      window.addEventListener('DOMContentLoaded', () => {
+        new CatSpawner();
+      });
     </script>
   </body>
 </html>
