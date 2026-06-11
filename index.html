@@ -26,10 +26,67 @@
         z-index: 9999;
         cursor: pointer; /* Changes mouse to a pointer hand so users know they can click it */
         user-select: none; /* Prevents text-selection highlighting while rapidly clicking */
+        transition: transform 0.1s ease;
+      }
+
+      /* Score Tracker styling */
+      #score-board {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(31, 78, 121, 0.9);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-size: 18px;
+        font-weight: bold;
+        z-index: 10000;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+
+      /* Bottom Right Action Button styling */
+      #mode-toggle-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: bold;
+        color: white;
+        background-color: #2E75B6;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        z-index: 10000;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transition: background-color 0.3s, transform 0.2s;
+      }
+
+      #mode-toggle-btn:hover {
+        transform: scale(1.05);
+      }
+
+      #mode-toggle-btn.explode-mode {
+        background-color: #d9534f;
+      }
+
+      /* Particle element styling for the explosion effect */
+      .explosion-particle {
+        position: fixed;
+        width: 8px;
+        height: 8px;
+        background-color: #ff5722;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
       }
     </style>
   </head>
   <body>
+
+    <!-- Score Tracker UI -->
+    <div id="score-board">Cats Exploded: <span id="score-val">0</span></div>
 
     <h1>Hi, I'm Victor Aguilar!</h1>
  
@@ -44,11 +101,82 @@
  
     <h2>My GitHub</h2>
     <p>Check out my projects: 
-      <a href="https://github.com"> VICTOR0240 </a>
+      <a href="
+      "> VICTOR0240 </a>
     </p>
 
-    <!-- Multi-Cat Physics Logic -->
+    <!-- Bottom Right Action Button -->
+    <button id="mode-toggle-btn">Switch to Explode Mode 💥</button>
+
+    <!-- Multi-Cat Physics & Game Logic -->
     <script>
+      // Game state trackers
+      let isExplodeMode = false;
+      let score = 0;
+      let globalSpeedMultiplier = 1.0; // Increases every time a cat pops
+
+      // Elements
+      const modeBtn = document.getElementById('mode-toggle-btn');
+      const scoreVal = document.getElementById('score-val');
+
+      // Toggle functionality for the mode button
+      modeBtn.addEventListener('click', () => {
+        isExplodeMode = !isExplodeMode;
+        if (isExplodeMode) {
+          modeBtn.textContent = "Switch to Spawn Mode 🐈";
+          modeBtn.classList.add('explode-mode');
+        } else {
+          modeBtn.textContent = "Switch to Explode Mode 💥";
+          modeBtn.classList.remove('explode-mode');
+        }
+      });
+
+      // Helper function to create an HTML particle blast explosion
+      function triggerExplosion(x, y) {
+        const particleCount = 20;
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'explosion-particle';
+          
+          // Randomize colors slightly between orange/yellow/red hues
+          const colors = ['#ff5722', '#ff9800', '#ffeb3b', '#e91e63'];
+          particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+          
+          document.body.appendChild(particle);
+
+          // Initial placements at click center
+          particle.style.left = x + 'px';
+          particle.style.top = y + 'px';
+
+          // Random trajectories
+          const angle = Math.random() * Math.PI * 2;
+          const velocity = Math.random() * 6 + 4;
+          let pX = x;
+          let pY = y;
+          let vX = Math.cos(angle) * velocity;
+          let vY = Math.sin(angle) * velocity;
+          let opacity = 1;
+
+          function animateParticle() {
+            pX += vX;
+            pY += vY;
+            vY += 0.1; // Simulated gravity effect pulling particles downward
+            opacity -= 0.02;
+
+            particle.style.left = pX + 'px';
+            particle.style.top = pY + 'px';
+            particle.style.opacity = opacity;
+
+            if (opacity > 0) {
+              requestAnimationFrame(animateParticle);
+            } else {
+              particle.remove();
+            }
+          }
+          requestAnimationFrame(animateParticle);
+        }
+      }
+
       // Class to manage independent physics for each cat instance
       class CatSpawner {
         constructor(startX = null, startY = null) {
@@ -61,18 +189,34 @@
           this.posX = startX !== null ? startX : Math.random() * (window.innerWidth - 100);
           this.posY = startY !== null ? startY : Math.random() * (window.innerHeight - 100);
           
-          // Set random speed trajectories so they scatter instantly
-          this.speedX = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
-          this.speedY = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
+          // Base speed configuration
+          this.baseSpeedX = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
+          this.baseSpeedY = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
 
           // Render initial positions immediately
           this.element.style.left = this.posX + 'px';
           this.element.style.top = this.posY + 'px';
 
-          // Click event to spawn a clone right at the current cat's location
+          // Unified behavior check when clicking a cat
           this.element.addEventListener('click', (e) => {
-            // Spawn an extra cat at the click point
-            new CatSpawner(this.posX, this.posY);
+            if (isExplodeMode) {
+              // Get accurate click position coordinates
+              const rect = this.element.getBoundingClientRect();
+              const clickX = rect.left + rect.width / 2;
+              const clickY = rect.top + rect.height / 2;
+
+              // Fire off graphic effects & clear cat from web screen
+              triggerExplosion(clickX, clickY);
+              this.element.remove();
+
+              // Update metrics
+              score++;
+              scoreVal.textContent = score;
+              globalSpeedMultiplier += 0.15; // Make remaining/future cats 15% faster
+            } else {
+              // Standard spawn clone mode behavior
+              new CatSpawner(this.posX, this.posY);
+            }
           });
 
           document.body.appendChild(this.element);
@@ -81,23 +225,27 @@
 
         animate() {
           const move = () => {
+            // Stop logic tracking loop if the element was exploded out of the DOM
+            if (!this.element.parentNode) return;
+
             const catWidth = this.element.offsetWidth || 100;
             const catHeight = this.element.offsetHeight || 100;
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
 
-            this.posX += this.speedX;
-            this.posY += this.speedY;
+            // Apply movement incorporating the adaptive speed acceleration multiplier
+            this.posX += this.baseSpeedX * globalSpeedMultiplier;
+            this.posY += this.baseSpeedY * globalSpeedMultiplier;
 
             // Bounce off left/right walls
             if (this.posX + catWidth >= screenWidth || this.posX <= 0) {
-              this.speedX = -this.speedX;
+              this.baseSpeedX = -this.baseSpeedX;
               this.posX = Math.max(0, Math.min(this.posX, screenWidth - catWidth)); 
             }
 
             // Bounce off top/bottom walls
             if (this.posY + catHeight >= screenHeight || this.posY <= 0) {
-              this.speedY = -this.speedY;
+              this.baseSpeedY = -this.baseSpeedY;
               this.posY = Math.max(0, Math.min(this.posY, screenHeight - catHeight));
             }
 
