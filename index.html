@@ -11,25 +11,25 @@
         margin: 0 auto; 
         padding: 20px; 
         background: #f5f5f5; 
+        /* Prevents multiplying cats from creating accidental scrollbars */
         overflow: hidden; 
-        transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
       }
       h1   { color: #1F4E79; }
       h2   { color: #2E75B6; border-bottom: 2px solid #2E75B6; }
       p    { line-height: 1.6; }
 
-      /* Bouncing cats */
+      /* Styles for the bouncing cat class */
       .bouncing-cat {
         position: fixed;
-        width: 100px; 
+        width: 100px; /* Adjust size of the cat here */
         height: auto;
         z-index: 9999;
-        cursor: pointer; 
-        user-select: none; 
+        cursor: pointer; /* Changes mouse to a pointer hand so users know they can click it */
+        user-select: none; /* Prevents text-selection highlighting while rapidly clicking */
         transition: transform 0.1s ease;
       }
 
-      /* Score Tracker */
+      /* Score Tracker styling */
       #score-board {
         position: fixed;
         top: 10px;
@@ -45,7 +45,7 @@
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
       }
 
-      /* Bottom Right Action Button */
+      /* Bottom Right Action Button styling */
       #mode-toggle-btn {
         position: fixed;
         bottom: 20px;
@@ -71,7 +71,7 @@
         background-color: #d9534f;
       }
 
-      /* Particle element styling */
+      /* Particle element styling for the explosion effect */
       .explosion-particle {
         position: fixed;
         width: 8px;
@@ -81,128 +81,12 @@
         pointer-events: none;
         z-index: 9999;
       }
-
-      /* BOSS ARENA STYLES */
-      #boss-arena {
-        position: fixed;
-        top: 0;
-        left: 100vw; /* Positioned directly to the right off-screen */
-        width: 100vw;
-        height: 100vh;
-        background: #111;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 20000;
-      }
-
-      #boss-health-container {
-        width: 60%;
-        height: 30px;
-        background: #333;
-        border: 3px solid #fff;
-        border-radius: 15px;
-        overflow: hidden;
-        margin-bottom: 30px;
-        box-shadow: 0 0 20px rgba(255,0,0,0.5);
-      }
-
-      #boss-health-bar {
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, #ff0000, #ff5722);
-        transition: width 0.1s ease;
-      }
-
-      #boss-img {
-        width: 400px;
-        height: auto;
-        cursor: pointer;
-        user-select: none;
-        border-radius: 20px;
-        box-shadow: 0 0 30px rgba(255,255,255,0.1);
-        transition: filter 0.2s ease, transform 0.1s ease;
-      }
-
-      /* Triggered when boss prepares an attack */
-      #boss-img.charging {
-        filter: drop-shadow(0 0 50px #ff0000) sepia(1) saturate(5) hue-rotate(-50deg);
-        animation: shake 0.1s infinite;
-      }
-
-      @keyframes shake {
-        0% { transform: translate(2px, 1px) rotate(0deg); }
-        10% { transform: translate(-1px, -2px) rotate(-1deg); }
-        20% { transform: translate(-3px, 0px) rotate(1deg); }
-        30% { transform: translate(0px, 2px) rotate(0deg); }
-        40% { transform: translate(1px, -1px) rotate(1deg); }
-        50% { transform: translate(-1px, 2px) rotate(-1deg); }
-        60% { transform: translate(-3px, 1px) rotate(0deg); }
-        70% { transform: translate(2px, 1px) rotate(-1deg); }
-        80% { transform: translate(-1px, -1px) rotate(1deg); }
-        90% { transform: translate(2px, 2px) rotate(0deg); }
-        100% { transform: translate(1px, -2px) rotate(-1deg); }
-      }
-
-      /* Flash overlay for player death */
-      #death-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: red;
-        display: none;
-        z-index: 30000;
-        justify-content: center;
-        align-items: center;
-        color: white;
-        font-size: 50px;
-        font-weight: bold;
-      }
-
-      /* Victory screen popup */
-      #victory-screen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.9);
-        display: none;
-        z-index: 30000;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: #fff;
-        text-align: center;
-      }
-
-      #victory-screen h1 {
-        color: #4cd137;
-        font-size: 60px;
-        margin-bottom: 20px;
-        text-shadow: 0 0 20px rgba(76, 209, 55, 0.5);
-      }
-
-      #victory-btn {
-        padding: 15px 30px;
-        font-size: 20px;
-        font-weight: bold;
-        color: white;
-        background: #4cd137;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      }
     </style>
   </head>
   <body>
 
     <!-- Score Tracker UI -->
-    <div id="score-board">Cats Exploded: <span id="score-val">0</span> / 100</div>
+    <div id="score-board">Cats Exploded: <span id="score-val">0</span></div>
 
     <h1>Hi, I'm Victor Aguilar!</h1>
  
@@ -224,43 +108,19 @@
     <!-- Bottom Right Action Button -->
     <button id="mode-toggle-btn">Switch to Explode Mode 💥</button>
 
-    <!-- BOSS ARENA CONTAINER -->
-    <div id="boss-arena">
-      <div id="boss-health-container">
-        <div id="boss-health-bar"></div>
-      </div>
-      <img id="boss-img" src="cat.gif" alt="Huge Cat Boss">
-    </div>
-
-    <!-- SCREENS OVERLAYS -->
-    <div id="death-overlay">YOU DIED</div>
-    <div id="victory-screen">
-      <h1>CONGRATULATIONS!</h1>
-      <p style="font-size: 24px; color: #aaa; margin-bottom: 30px;">You have successfully defeated the Huge Cat Boss!</p>
-      <button id="victory-btn" onclick="location.reload()">Play Again 🔄</button>
-    </div>
-
     <!-- Multi-Cat Physics & Game Logic -->
     <script>
+      // Game state trackers
       let isExplodeMode = false;
       let score = 0;
-      let globalSpeedMultiplier = 1.0; 
-      let isBossFight = false;
-      let bossHP = 100;
-      let bossAttackTimeout = null;
-      let bossChargeTimeout = null;
+      let globalSpeedMultiplier = 1.0; // Increases every time a cat pops
 
+      // Elements
       const modeBtn = document.getElementById('mode-toggle-btn');
       const scoreVal = document.getElementById('score-val');
-      const bossArena = document.getElementById('boss-arena');
-      const bossImg = document.getElementById('boss-img');
-      const bossHealthBar = document.getElementById('boss-health-bar');
-      const deathOverlay = document.getElementById('death-overlay');
-      const victoryScreen = document.getElementById('victory-screen');
 
       // Toggle functionality for the mode button
       modeBtn.addEventListener('click', () => {
-        if (isBossFight) return; // Disable mode switching during the boss fight
         isExplodeMode = !isExplodeMode;
         if (isExplodeMode) {
           modeBtn.textContent = "Switch to Spawn Mode 🐈";
@@ -271,20 +131,24 @@
         }
       });
 
-      // Particle blast explosion helper
+      // Helper function to create an HTML particle blast explosion
       function triggerExplosion(x, y) {
         const particleCount = 20;
         for (let i = 0; i < particleCount; i++) {
           const particle = document.createElement('div');
           particle.className = 'explosion-particle';
           
+          // Randomize colors slightly between orange/yellow/red hues
           const colors = ['#ff5722', '#ff9800', '#ffeb3b', '#e91e63'];
           particle.style.background = colors[Math.floor(Math.random() * colors.length)];
           
           document.body.appendChild(particle);
+
+          // Initial placements at click center
           particle.style.left = x + 'px';
           particle.style.top = y + 'px';
 
+          // Random trajectories
           const angle = Math.random() * Math.PI * 2;
           const velocity = Math.random() * 6 + 4;
           let pX = x;
@@ -296,7 +160,7 @@
           function animateParticle() {
             pX += vX;
             pY += vY;
-            vY += 0.1; 
+            vY += 0.1; // Simulated gravity effect pulling particles downward
             opacity -= 0.02;
 
             particle.style.left = pX + 'px';
@@ -313,175 +177,91 @@
         }
       }
 
-      // Check for score milestone to trigger boss fight
-      function checkScore() {
-        if (score >= 100 && !isBossFight) {
-          startBossFight();
+      // Class to manage independent physics for each cat instance
+      class CatSpawner {
+        constructor(startX = null, startY = null) {
+          this.element = document.createElement('img');
+          this.element.src = 'cat.gif';
+          this.element.alt = 'Dancing Cat';
+          this.element.className = 'bouncing-cat';
+          
+          // Set initial spawn coordinates or choose random if none provided
+          this.posX = startX !== null ? startX : Math.random() * (window.innerWidth - 100);
+          this.posY = startY !== null ? startY : Math.random() * (window.innerHeight - 100);
+          
+          // Base speed configuration
+          this.baseSpeedX = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
+          this.baseSpeedY = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
+
+          // Render initial positions immediately
+          this.element.style.left = this.posX + 'px';
+          this.element.style.top = this.posY + 'px';
+
+          // Unified behavior check when clicking a cat
+          this.element.addEventListener('click', (e) => {
+            if (isExplodeMode) {
+              // Get accurate click position coordinates
+              const rect = this.element.getBoundingClientRect();
+              const clickX = rect.left + rect.width / 2;
+              const clickY = rect.top + rect.height / 2;
+
+              // Fire off graphic effects & clear cat from web screen
+              triggerExplosion(clickX, clickY);
+              this.element.remove();
+
+              // Update metrics
+              score++;
+              scoreVal.textContent = score;
+              globalSpeedMultiplier += 0.15; // Make remaining/future cats 15% faster
+            } else {
+              // Standard spawn clone mode behavior
+              new CatSpawner(this.posX, this.posY);
+            }
+          });
+
+          document.body.appendChild(this.element);
+          this.animate();
+        }
+
+        animate() {
+          const move = () => {
+            // Stop logic tracking loop if the element was exploded out of the DOM
+            if (!this.element.parentNode) return;
+
+            const catWidth = this.element.offsetWidth || 100;
+            const catHeight = this.element.offsetHeight || 100;
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+
+            // Apply movement incorporating the adaptive speed acceleration multiplier
+            this.posX += this.baseSpeedX * globalSpeedMultiplier;
+            this.posY += this.baseSpeedY * globalSpeedMultiplier;
+
+            // Bounce off left/right walls
+            if (this.posX + catWidth >= screenWidth || this.posX <= 0) {
+              this.baseSpeedX = -this.baseSpeedX;
+              this.posX = Math.max(0, Math.min(this.posX, screenWidth - catWidth)); 
+            }
+
+            // Bounce off top/bottom walls
+            if (this.posY + catHeight >= screenHeight || this.posY <= 0) {
+              this.baseSpeedY = -this.baseSpeedY;
+              this.posY = Math.max(0, Math.min(this.posY, screenHeight - catHeight));
+            }
+
+            this.element.style.left = this.posX + 'px';
+            this.element.style.top = this.posY + 'px';
+
+            requestAnimationFrame(move);
+          };
+          requestAnimationFrame(move);
         }
       }
 
-      // Transition screen setup for boss loop
-      function startBossFight() {
-        isBossFight = true;
-        
-        // Remove all current bouncing cats from screen
-        document.querySelectorAll('.bouncing-cat').forEach(cat => cat.remove());
-        modeBtn.style.display = 'none';
-        document.getElementById('score-board').style.display = 'none';
-
-        // Slide the viewpoint out to the left to show the arena stage
-        document.body.style.transform = 'translateX(-100vw)';
-        // Let the slide finish, then begin the boss attack cycle
-setTimeout(() => {
-  loopBossAttackCycle();
-}, 1500);
-
-// Boss Combat Logic Loops
-function loopBossAttackCycle() {
-  if (!isBossFight) return;
-
-  // Pick a random interval time before the next red charging sequence flashes
-  let timeBeforeCharge = Math.random() * 2000 + 1500;
-
-  bossChargeTimeout = setTimeout(() => {
-    if (!isBossFight) return;
-
-    // Turn red/shake to signify impending hit
-    bossImg.classList.add("charging");
-
-    // Player has 1.2 seconds to hit the boss or finish it before taking terminal damage
-    bossAttackTimeout = setTimeout(() => {
-      if (!isBossFight) return;
-      playerDie();
-    }, 1200);
-  }, timeBeforeCharge);
-}
-
-// Action event handler when tapping/clicking the boss element
-bossImg.addEventListener("click", (e) => {
-  if (!isBossFight) return;
-
-  // Create massive particle hits around click position
-  triggerExplosion(e.clientX, e.clientY);
-  triggerExplosion(e.clientX - 20, e.clientY + 20);
-  triggerExplosion(e.clientX + 20, e.clientY - 20);
-
-  // Deduct life point metrics
-  bossHP--;
-  bossHealthBar.style.width = bossHP + "%";
-
-  // Tapping the boss while it is preparing an attack cancels its charge sequence
-  if (bossImg.classList.contains("charging")) {
-    bossImg.classList.remove("charging");
-    clearTimeout(bossAttackTimeout);
-    clearTimeout(bossChargeTimeout);
-
-    // Restart a clean cycle wait timer
-    loopBossAttackCycle();
-  }
-
-  // Validate win scenarios
-  if (bossHP <= 0) {
-    playerWin();
-  }
-});
-
-// Terminal game-over screen handler
-function playerDie() {
-  isBossFight = false;
-  clearTimeout(bossAttackTimeout);
-  clearTimeout(bossChargeTimeout);
-  deathOverlay.style.display = "flex";
-
-  setTimeout(() => {
-    location.reload();
-  }, 2000);
-}
-
-// Victory conditions screen launcher
-function playerWin() {
-  isBossFight = false;
-  clearTimeout(bossAttackTimeout);
-  clearTimeout(bossChargeTimeout);
-  victoryScreen.style.display = "flex";
-}
-
-// Class to manage independent physics for each cat instance
-class CatSpawner {
-  constructor(startX = null, startY = null) {
-    if (isBossFight) return;
-
-    this.element = document.createElement("img");
-    this.element.src = "cat.gif";
-    this.element.alt = "Dancing Cat";
-    this.element.className = "bouncing-cat";
-
-    this.posX = startX !== null ? startX : Math.random() * (window.innerWidth - 100);
-    this.posY = startY !== null ? startY : Math.random() * (window.innerHeight - 100);
-
-    this.baseSpeedX = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
-    this.baseSpeedY = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
-
-    this.element.style.left = this.posX + "px";
-    this.element.style.top = this.posY + "px";
-
-    this.element.addEventListener("click", (e) => {
-      if (isBossFight) return;
-
-      if (isExplodeMode) {
-        const rect = this.element.getBoundingClientRect();
-        const clickX = rect.left + rect.width / 2;
-        const clickY = rect.top + rect.height / 2;
-
-        triggerExplosion(clickX, clickY);
-        this.element.remove();
-
-        score++;
-        scoreVal.textContent = score;
-        globalSpeedMultiplier += 0.15;
-        checkScore();
-      } else {
-        new CatSpawner(this.posX, this.posY);
-      }
-    });
-
-    document.body.appendChild(this.element);
-    this.animate();
-  }
-
-  animate() {
-    const move = () => {
-      if (!this.element.parentNode || isBossFight) return;
-
-      const catWidth = this.element.offsetWidth || 100;
-      const catHeight = this.element.offsetHeight || 100;
-      const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
-
-      this.posX += this.baseSpeedX * globalSpeedMultiplier;
-      this.posY += this.baseSpeedY * globalSpeedMultiplier;
-
-      if (this.posX + catWidth >= screenWidth || this.posX <= 0) {
-        this.baseSpeedX = -this.baseSpeedX;
-        this.posX = Math.max(0, Math.min(this.posX, screenWidth - catWidth));
-      }
-
-      if (this.posY + catHeight >= screenHeight || this.posY <= 0) {
-        this.baseSpeedY = -this.baseSpeedY;
-        this.posY = Math.max(0, Math.min(this.posY, screenHeight - catHeight));
-      }
-
-      this.element.style.left = this.posX + "px";
-      this.element.style.top = this.posY + "px";
-
-      requestAnimationFrame(move);
-    };
-
-    requestAnimationFrame(move);
-  }
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  new CatSpawner();
-});
-
+      // Spawn the very first cat automatically when the script loads
+      window.addEventListener('DOMContentLoaded', () => {
+        new CatSpawner();
+      });
+    </script>
+  </body>
+</html>
