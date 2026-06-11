@@ -217,7 +217,8 @@
  
     <h2>My GitHub</h2>
     <p>Check out my projects: 
-      <a href="https://github.com"> VICTOR0240 </a>
+      <a href="
+      "> VICTOR0240 </a>
     </p>
 
     <!-- Bottom Right Action Button -->
@@ -330,25 +331,25 @@
 
         // Slide the viewpoint out to the left to show the arena stage
         document.body.style.transform = 'translateX(-100vw)';
-        
-// Let the slide finish, then begin the boss attack cycle
-setTimeout(() => {
+        // Let the slide finish, then begin the boss attack cycle
+
+        setTimeout(() => {
   loopBossAttackCycle();
 }, 1500);
 
 // Boss Combat Logic Loops
 function loopBossAttackCycle() {
   if (!isBossFight) return;
-  
+
   // Pick a random interval time before the next red charging sequence flashes
   let timeBeforeCharge = Math.random() * 2000 + 1500;
-  
+
   bossChargeTimeout = setTimeout(() => {
     if (!isBossFight) return;
-    
+
     // Turn red/shake to signify impending hit
-    bossImg.classList.add('charging');
-    
+    bossImg.classList.add("charging");
+
     // Player has 1.2 seconds to hit the boss or finish it before taking terminal damage
     bossAttackTimeout = setTimeout(() => {
       if (!isBossFight) return;
@@ -358,28 +359,28 @@ function loopBossAttackCycle() {
 }
 
 // Action event handler when tapping/clicking the boss element
-bossImg.addEventListener('click', (e) => {
+bossImg.addEventListener("click", (e) => {
   if (!isBossFight) return;
-  
+
   // Create massive particle hits around click position
   triggerExplosion(e.clientX, e.clientY);
   triggerExplosion(e.clientX - 20, e.clientY + 20);
   triggerExplosion(e.clientX + 20, e.clientY - 20);
-  
+
   // Deduct life point metrics
   bossHP--;
-  bossHealthBar.style.width = bossHP + '%';
-  
+  bossHealthBar.style.width = bossHP + "%";
+
   // Tapping the boss while it is preparing an attack cancels its charge sequence
-  if (bossImg.classList.contains('charging')) {
-    bossImg.classList.remove('charging');
+  if (bossImg.classList.contains("charging")) {
+    bossImg.classList.remove("charging");
     clearTimeout(bossAttackTimeout);
     clearTimeout(bossChargeTimeout);
-    
+
     // Restart a clean cycle wait timer
     loopBossAttackCycle();
   }
-  
+
   // Validate win scenarios
   if (bossHP <= 0) {
     playerWin();
@@ -391,8 +392,8 @@ function playerDie() {
   isBossFight = false;
   clearTimeout(bossAttackTimeout);
   clearTimeout(bossChargeTimeout);
-  deathOverlay.style.display = 'flex';
-  
+  deathOverlay.style.display = "flex";
+
   setTimeout(() => {
     location.reload();
   }, 2000);
@@ -403,39 +404,39 @@ function playerWin() {
   isBossFight = false;
   clearTimeout(bossAttackTimeout);
   clearTimeout(bossChargeTimeout);
-  victoryScreen.style.display = 'flex';
+  victoryScreen.style.display = "flex";
 }
 
 // Class to manage independent physics for each cat instance
 class CatSpawner {
   constructor(startX = null, startY = null) {
     if (isBossFight) return;
-    
-    this.element = document.createElement('img');
-    this.element.src = 'cat.gif';
-    this.element.alt = 'Dancing Cat';
-    this.element.className = 'bouncing-cat';
-    
+
+    this.element = document.createElement("img");
+    this.element.src = "cat.gif";
+    this.element.alt = "Dancing Cat";
+    this.element.className = "bouncing-cat";
+
     this.posX = startX !== null ? startX : Math.random() * (window.innerWidth - 100);
     this.posY = startY !== null ? startY : Math.random() * (window.innerHeight - 100);
-    
+
     this.baseSpeedX = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
     this.baseSpeedY = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
-    
-    this.element.style.left = this.posX + 'px';
-    this.element.style.top = this.posY + 'px';
-    
-    this.element.addEventListener('click', (e) => {
+
+    this.element.style.left = this.posX + "px";
+    this.element.style.top = this.posY + "px";
+
+    this.element.addEventListener("click", (e) => {
       if (isBossFight) return;
-      
+
       if (isExplodeMode) {
         const rect = this.element.getBoundingClientRect();
         const clickX = rect.left + rect.width / 2;
         const clickY = rect.top + rect.height / 2;
-        
+
         triggerExplosion(clickX, clickY);
         this.element.remove();
-        
+
         score++;
         scoreVal.textContent = score;
         globalSpeedMultiplier += 0.15;
@@ -444,43 +445,44 @@ class CatSpawner {
         new CatSpawner(this.posX, this.posY);
       }
     });
-    
+
     document.body.appendChild(this.element);
     this.animate();
   }
-  
+
   animate() {
     const move = () => {
       if (!this.element.parentNode || isBossFight) return;
-      
+
       const catWidth = this.element.offsetWidth || 100;
       const catHeight = this.element.offsetHeight || 100;
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
-      
+
       this.posX += this.baseSpeedX * globalSpeedMultiplier;
       this.posY += this.baseSpeedY * globalSpeedMultiplier;
-      
+
       if (this.posX + catWidth >= screenWidth || this.posX <= 0) {
         this.baseSpeedX = -this.baseSpeedX;
         this.posX = Math.max(0, Math.min(this.posX, screenWidth - catWidth));
       }
-      
+
       if (this.posY + catHeight >= screenHeight || this.posY <= 0) {
         this.baseSpeedY = -this.baseSpeedY;
         this.posY = Math.max(0, Math.min(this.posY, screenHeight - catHeight));
       }
-      
-      this.element.style.left = this.posX + 'px';
-      this.element.style.top = this.posY + 'px';
-      
+
+      this.element.style.left = this.posX + "px";
+      this.element.style.top = this.posY + "px";
+
       requestAnimationFrame(move);
     };
-    
+
     requestAnimationFrame(move);
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener("DOMContentLoaded", () => {
   new CatSpawner();
 });
+
