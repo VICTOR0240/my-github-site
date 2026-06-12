@@ -9,7 +9,7 @@
         font-family: Arial, sans-serif; 
         max-width: 800px;
         margin: 0 auto; 
-        padding: 20px 20px 150px 20px; /* Added bottom padding to allow scrolling past content */
+        padding: 20px 20px 150px 20px; /* Gives space to scroll down to your image */
         background: #FFF9E6; /* Soft pastel yellow background */
       }
       h1   { color: #1F4E79; }
@@ -95,21 +95,16 @@
         z-index: 9999;
       }
 
-      /* Scroll-revealed Image Container */
+      /* Scroll-revealed Image Layout */
       .scroll-avatar-container {
-        margin-top: 60px;
+        margin-top: 80px;
         text-align: center;
-        padding: 20px;
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       }
 
       .scroll-avatar-container img {
         max-width: 100%;
         height: auto;
         border-radius: 10px;
-        border: 4px solid #2E75B6;
       }
     </style>
   </head>
@@ -119,7 +114,8 @@
     <div id="control-panel">
       <div>Cats Exploded: <span id="score-val">0</span></div>
       <label class="switch-label">
-        <input type="checkbox" id="cat-master-toggle" checked>
+        <!-- Removed "checked" attribute so it starts disabled -->
+        <input type="checkbox" id="cat-master-toggle">
         Enable Cats 🐈
       </label>
     </div>
@@ -140,14 +136,9 @@
       <a href="https://github.com"> VICTOR0240 </a>
     </p>
 
-    <!-- Scroll down section to reveal image -->
-    <h2>My Art Showcase</h2>
-    <p>Scroll down further to check out my custom character illustration!</p>
-
+    <!-- Clean Scroll Section: Only the image shows when scrolling down -->
     <div class="scroll-avatar-container">
-      <h3>Character Avatar</h3>
-      <!-- Place your downloaded drawing file name here (e.g., character.png) -->
-      <img src="character.png" alt="Victor's Custom Drawing">
+      <img src="character.png" alt="Victor's Drawing">
     </div>
 
     <!-- Bottom Right Action Button -->
@@ -157,7 +148,7 @@
     <script>
       // Game state trackers
       let isExplodeMode = false;
-      let catsEnabled = true;
+      let catsEnabled = false; // Changed to false initially
       let score = 0;
       let globalSpeedMultiplier = 1.0; 
 
@@ -181,10 +172,10 @@
       // Master switch visibility handler for turning gifs off/on
       catToggle.addEventListener('change', (e) => {
         catsEnabled = e.target.checked;
-        const existingCats = document.querySelectorAll('.bouncing-cat');
         
         if (!catsEnabled) {
           // Hide and clear active elements from the DOM if turned off
+          const existingCats = document.querySelectorAll('.bouncing-cat');
           existingCats.forEach(cat => cat.remove());
         } else {
           // Spawn a fresh cat back onto the screen if toggled back on
@@ -309,9 +300,13 @@
           };
           
           requestAnimationFrame(move);
-}
-}
+        }
+      }
 
-window.addEventListener('DOMContentLoaded', () => {
-  new CatSpawner();
-});
+      window.addEventListener('DOMContentLoaded', () => {
+        // Disabled by default on initial page launch
+        // Cats will now properly appear only when "Enable Cats" is checked
+      });
+    </script>
+  </body>
+</html>
