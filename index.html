@@ -166,7 +166,7 @@
     <script>
       // Game state trackers
       let isExplodeMode = false;
-      let catsEnabled = false; // Correctly disabled by default on load
+      let catsEnabled = false; 
       let score = 0;
       let globalSpeedMultiplier = 1.0; 
 
@@ -187,7 +187,7 @@
         }
       });
 
-      // Fixed: Listens directly to checkbox state changes to spawn immediately
+      // Simple click/change safety switch
       catToggle.addEventListener('change', () => {
         catsEnabled = catToggle.checked;
         
@@ -195,7 +195,6 @@
           const existingCats = document.querySelectorAll('.bouncing-cat');
           existingCats.forEach(cat => cat.remove());
         } else {
-          // If toggled ON and no cats exist on screen, force spawn one instantly
           if (document.querySelectorAll('.bouncing-cat').length === 0) {
             new CatSpawner();
           }
@@ -252,15 +251,16 @@
 
           this.element = document.createElement('img');
           this.element.className = 'bouncing-cat';
-          this.element.src = 'cat.gif'; // Uses your working local file perfectly
           this.element.alt = 'Dancing Cat';
           
-          this.posX = startX !== null ? startX : Math.random() * (window.innerWidth - 100);
-          this.posY = startY !== null ? startY : Math.random() * (window.innerHeight - 100);
-          
+          // Added random directions immediately
           this.baseSpeedX = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
           this.baseSpeedY = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
 
+          // Fixed: Set spawn point BEFORE image file finishes loading to prevent rendering at 0,0
+          this.posX = startX !== null ? startX : Math.random() * (window.innerWidth - 120);
+          this.posY = startY !== null ? startY : Math.random() * (window.innerHeight - 120);
+          
           this.element.style.left = this.posX + 'px';
           this.element.style.top = this.posY + 'px';
 
@@ -281,8 +281,14 @@
             }
           });
 
+          // Fixed: Wait until the image payload loads before triggering animation
+          this.element.onload = () => {
+            this.animate();
+          };
+
+          // Set file source last
+          this.element.src = 'cat.gif';
           document.body.appendChild(this.element);
-          this.animate();
         }
 
         animate() {
@@ -292,6 +298,7 @@
               return;
             }
 
+            // Fixed: Set hard default dimensions (100) if browser returns 0
             const catWidth = this.element.offsetWidth || 100;
             const catHeight = this.element.offsetHeight || 100;
             const screenWidth = window.innerWidth;
@@ -306,14 +313,16 @@
             }
 
             if (this.posY + catHeight >= screenHeight || this.posY <= 0) {
-              this.baseSpeedY = -this.baseSpeedY;
-              this.posY = Math.max(0, Math.min(this.posY, screenHeight - catHeight));
-            }
+this.baseSpeedY = -this.baseSpeedY;
+this.posY = Math.max(0, Math.min(this.posY, screenHeight - catHeight));
+}
 
 this.element.style.left = this.posX + 'px';
 this.element.style.top = this.posY + 'px';
+
 requestAnimationFrame(move);
 };
+
 requestAnimationFrame(move);
 }
 }
