@@ -3,16 +3,14 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Victor's Website</title>
+    <title>Victor's Website</title>
     <style>
       body { 
         font-family: Arial, sans-serif; 
         max-width: 800px;
         margin: 0 auto; 
-        padding: 20px; 
-        background: #f5f5f5; 
-        /* Prevents multiplying cats from creating accidental scrollbars */
-        overflow: hidden; 
+        padding: 20px 20px 150px 20px; /* Added bottom padding to allow scrolling past content */
+        background: #FFF9E6; /* Soft pastel yellow background */
       }
       h1   { color: #1F4E79; }
       h2   { color: #2E75B6; border-bottom: 2px solid #2E75B6; }
@@ -21,28 +19,43 @@
       /* Styles for the bouncing cat class */
       .bouncing-cat {
         position: fixed;
-        width: 100px; /* Adjust size of the cat here */
+        width: 100px; 
         height: auto;
         z-index: 9999;
-        cursor: pointer; /* Changes mouse to a pointer hand so users know they can click it */
-        user-select: none; /* Prevents text-selection highlighting while rapidly clicking */
+        cursor: pointer; 
+        user-select: none; 
         transition: transform 0.1s ease;
       }
 
-      /* Score Tracker styling */
-      #score-board {
+      /* Control Board Container (Score + Toggle Switch) */
+      #control-panel {
         position: fixed;
         top: 10px;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(31, 78, 121, 0.9);
+        background: rgba(31, 78, 121, 0.95);
         color: white;
-        padding: 10px 20px;
+        padding: 12px 24px;
         border-radius: 20px;
-        font-size: 18px;
+        font-size: 16px;
         font-weight: bold;
         z-index: 10000;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      /* Simple Toggle Checkbox Switch Styling */
+      .switch-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 4px 10px;
+        border-radius: 10px;
       }
 
       /* Bottom Right Action Button styling */
@@ -81,17 +94,40 @@
         pointer-events: none;
         z-index: 9999;
       }
+
+      /* Scroll-revealed Image Container */
+      .scroll-avatar-container {
+        margin-top: 60px;
+        text-align: center;
+        padding: 20px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      }
+
+      .scroll-avatar-container img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        border: 4px solid #2E75B6;
+      }
     </style>
   </head>
   <body>
 
-    <!-- Score Tracker UI -->
-    <div id="score-board">Cats Exploded: <span id="score-val">0</span></div>
+    <!-- Control Panel: Score Tracker + Game Toggle UI -->
+    <div id="control-panel">
+      <div>Cats Exploded: <span id="score-val">0</span></div>
+      <label class="switch-label">
+        <input type="checkbox" id="cat-master-toggle" checked>
+        Enable Cats 🐈
+      </label>
+    </div>
 
     <h1>Hi, I'm Victor Aguilar!</h1>
  
     <h2>About Me</h2>
-    <p> I am 16 years old and I am Mexican. I am a high school junior at energy tech.</p>
+    <p> I am 16 years old. I am a high school junior at energy tech.</p>
  
     <h2>My Interests</h2>
     <p> Film, Drawing, Games, Exploring </p>
@@ -101,9 +137,18 @@
  
     <h2>My GitHub</h2>
     <p>Check out my projects: 
-      <a href="
-      "> VICTOR0240 </a>
+      <a href="https://github.com"> VICTOR0240 </a>
     </p>
+
+    <!-- Scroll down section to reveal image -->
+    <h2>My Art Showcase</h2>
+    <p>Scroll down further to check out my custom character illustration!</p>
+
+    <div class="scroll-avatar-container">
+      <h3>Character Avatar</h3>
+      <!-- Place your downloaded drawing file name here (e.g., character.png) -->
+      <img src="character.png" alt="Victor's Custom Drawing">
+    </div>
 
     <!-- Bottom Right Action Button -->
     <button id="mode-toggle-btn">Switch to Explode Mode 💥</button>
@@ -112,14 +157,16 @@
     <script>
       // Game state trackers
       let isExplodeMode = false;
+      let catsEnabled = true;
       let score = 0;
-      let globalSpeedMultiplier = 1.0; // Increases every time a cat pops
+      let globalSpeedMultiplier = 1.0; 
 
       // Elements
       const modeBtn = document.getElementById('mode-toggle-btn');
       const scoreVal = document.getElementById('score-val');
+      const catToggle = document.getElementById('cat-master-toggle');
 
-      // Toggle functionality for the mode button
+      // Toggle functionality for explode vs spawn mode
       modeBtn.addEventListener('click', () => {
         isExplodeMode = !isExplodeMode;
         if (isExplodeMode) {
@@ -131,6 +178,20 @@
         }
       });
 
+      // Master switch visibility handler for turning gifs off/on
+      catToggle.addEventListener('change', (e) => {
+        catsEnabled = e.target.checked;
+        const existingCats = document.querySelectorAll('.bouncing-cat');
+        
+        if (!catsEnabled) {
+          // Hide and clear active elements from the DOM if turned off
+          existingCats.forEach(cat => cat.remove());
+        } else {
+          // Spawn a fresh cat back onto the screen if toggled back on
+          new CatSpawner();
+        }
+      });
+
       // Helper function to create an HTML particle blast explosion
       function triggerExplosion(x, y) {
         const particleCount = 20;
@@ -138,17 +199,14 @@
           const particle = document.createElement('div');
           particle.className = 'explosion-particle';
           
-          // Randomize colors slightly between orange/yellow/red hues
           const colors = ['#ff5722', '#ff9800', '#ffeb3b', '#e91e63'];
           particle.style.background = colors[Math.floor(Math.random() * colors.length)];
           
           document.body.appendChild(particle);
 
-          // Initial placements at click center
           particle.style.left = x + 'px';
           particle.style.top = y + 'px';
 
-          // Random trajectories
           const angle = Math.random() * Math.PI * 2;
           const velocity = Math.random() * 6 + 4;
           let pX = x;
@@ -160,7 +218,7 @@
           function animateParticle() {
             pX += vX;
             pY += vY;
-            vY += 0.1; // Simulated gravity effect pulling particles downward
+            vY += 0.1; 
             opacity -= 0.02;
 
             particle.style.left = pX + 'px';
@@ -180,41 +238,36 @@
       // Class to manage independent physics for each cat instance
       class CatSpawner {
         constructor(startX = null, startY = null) {
+          // Block initialization if the master toggle is checked off
+          if (!catsEnabled) return;
+
           this.element = document.createElement('img');
           this.element.src = 'cat.gif';
           this.element.alt = 'Dancing Cat';
           this.element.className = 'bouncing-cat';
           
-          // Set initial spawn coordinates or choose random if none provided
           this.posX = startX !== null ? startX : Math.random() * (window.innerWidth - 100);
           this.posY = startY !== null ? startY : Math.random() * (window.innerHeight - 100);
           
-          // Base speed configuration
           this.baseSpeedX = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
           this.baseSpeedY = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
 
-          // Render initial positions immediately
           this.element.style.left = this.posX + 'px';
           this.element.style.top = this.posY + 'px';
 
-          // Unified behavior check when clicking a cat
           this.element.addEventListener('click', (e) => {
             if (isExplodeMode) {
-              // Get accurate click position coordinates
               const rect = this.element.getBoundingClientRect();
               const clickX = rect.left + rect.width / 2;
               const clickY = rect.top + rect.height / 2;
 
-              // Fire off graphic effects & clear cat from web screen
               triggerExplosion(clickX, clickY);
               this.element.remove();
 
-              // Update metrics
               score++;
               scoreVal.textContent = score;
-              globalSpeedMultiplier += 0.15; // Make remaining/future cats 15% faster
+              globalSpeedMultiplier += 0.15; 
             } else {
-              // Standard spawn clone mode behavior
               new CatSpawner(this.posX, this.posY);
             }
           });
@@ -225,25 +278,25 @@
 
         animate() {
           const move = () => {
-            // Stop logic tracking loop if the element was exploded out of the DOM
-            if (!this.element.parentNode) return;
+            // Terminate loop immediately if elements are toggled off or broken out of DOM
+            if (!this.element.parentNode || !catsEnabled) {
+              this.element.remove();
+              return;
+            }
 
             const catWidth = this.element.offsetWidth || 100;
             const catHeight = this.element.offsetHeight || 100;
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
 
-            // Apply movement incorporating the adaptive speed acceleration multiplier
             this.posX += this.baseSpeedX * globalSpeedMultiplier;
             this.posY += this.baseSpeedY * globalSpeedMultiplier;
 
-            // Bounce off left/right walls
             if (this.posX + catWidth >= screenWidth || this.posX <= 0) {
               this.baseSpeedX = -this.baseSpeedX;
-              this.posX = Math.max(0, Math.min(this.posX, screenWidth - catWidth)); 
+              this.posX = Math.max(0, Math.min(this.posX, screenWidth - catWidth));
             }
 
-            // Bounce off top/bottom walls
             if (this.posY + catHeight >= screenHeight || this.posY <= 0) {
               this.baseSpeedY = -this.baseSpeedY;
               this.posY = Math.max(0, Math.min(this.posY, screenHeight - catHeight));
@@ -254,14 +307,11 @@
 
             requestAnimationFrame(move);
           };
+          
           requestAnimationFrame(move);
-        }
-      }
+}
+}
 
-      // Spawn the very first cat automatically when the script loads
-      window.addEventListener('DOMContentLoaded', () => {
-        new CatSpawner();
-      });
-    </script>
-  </body>
-</html>
+window.addEventListener('DOMContentLoaded', () => {
+  new CatSpawner();
+});
