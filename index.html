@@ -9,8 +9,8 @@
         font-family: Arial, sans-serif; 
         max-width: 800px;
         margin: 0 auto; 
-        padding: 20px 20px 150px 20px; /* Gives space to scroll down to your image */
-        background: #FFF9E6; /* Soft pastel yellow background */
+        padding: 20px 20px 150px 20px; 
+        background: #FFF9E6; 
       }
       h1   { color: #1F4E79; }
       h2   { color: #2E75B6; border-bottom: 2px solid #2E75B6; }
@@ -149,10 +149,9 @@
  
     <h2>My Projects</h2>
     <ul class="project-links">
-      <li>GitHub: <a href="https://github.com/VICTOR0240" target="_blank">VICTOR0240</a></li>
-      <li>Tinkercad: <a href="https://www.tinkercad.com/things/2LVU4KrAkyH-human" target="_blank">3D Human Model</a></li>
-      <li>
-        : <a href="https://studio.code.org/projects/applab/4112e6cb-0e24-4dc3-934c-27ea6569daf1" target="_blank">App Lab Project</a></li>
+      <li>GitHub: <a href="https://github.com" target="_blank">VICTOR0240</a></li>
+      <li>Tinkercad: <a href="https://tinkercad.com" target="_blank">3D Human Model</a></li>
+      <li>Code.org: <a href="https://code.org" target="_blank">App Lab Project</a></li>
     </ul>
 
     <!-- Clean Scroll Section: Only the image shows when scrolling down -->
@@ -188,15 +187,18 @@
         }
       });
 
-      // Master switch visibility handler for turning gifs off/on
-      catToggle.addEventListener('change', (e) => {
-        catsEnabled = e.target.checked;
+      // Switched event to 'click' to guarantee instant response across all browsers
+      catToggle.addEventListener('click', () => {
+        catsEnabled = catToggle.checked;
         
         if (!catsEnabled) {
           const existingCats = document.querySelectorAll('.bouncing-cat');
           existingCats.forEach(cat => cat.remove());
         } else {
-          new CatSpawner();
+          // Double-check no phantom cats exist before building a new one
+          if (document.querySelectorAll('.bouncing-cat').length === 0) {
+            new CatSpawner();
+          }
         }
       });
 
@@ -249,9 +251,14 @@
           if (!catsEnabled) return;
 
           this.element = document.createElement('img');
-          this.element.src = 'cat.gif';
-          this.element.alt = 'Dancing Cat';
           this.element.className = 'bouncing-cat';
+          
+          // Fallback logic: If your local 'cat.gif' is missing, it automatically loads a backup animated cat 
+          this.element.src = 'cat.gif';
+          this.element.onerror = () => {
+            this.element.src = 'https://giphy.com';
+          };
+          this.element.alt = 'Dancing Cat';
           
           this.posX = startX !== null ? startX : Math.random() * (window.innerWidth - 100);
           this.posY = startY !== null ? startY : Math.random() * (window.innerHeight - 100);
@@ -301,22 +308,17 @@
             if (this.posX + catWidth >= screenWidth || this.posX <= 0) {
               this.baseSpeedX = -this.baseSpeedX;
               this.posX = Math.max(0, Math.min(this.posX, screenWidth - catWidth));
-            }
+}
 
-            if (this.posY + catHeight >= screenHeight || this.posY <= 0) {
-              this.baseSpeedY = -this.baseSpeedY;
-              this.posY = Math.max(0, Math.min(this.posY, screenHeight - catHeight));
-            }
+if (this.posY + catHeight >= screenHeight || this.posY <= 0) {
+  this.baseSpeedY = -this.baseSpeedY;
+  this.posY = Math.max(0, Math.min(this.posY, screenHeight - catHeight));
+}
 
-            this.element.style.left = this.posX + 'px';
-            this.element.style.top = this.posY + 'px';
-
-            requestAnimationFrame(move);
-          };
-          
-          requestAnimationFrame(move);
-        }
-      }
-window.addEventListener('DOMContentLoaded', () => {
-  // Disabled by default on launch
-  // });
+this.element.style.left = this.posX + 'px';
+this.element.style.top = this.posY + 'px';
+requestAnimationFrame(move);
+};
+requestAnimationFrame(move);
+}
+}
