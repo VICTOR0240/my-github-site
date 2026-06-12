@@ -11,12 +11,12 @@
         margin: 0 auto; 
         padding: 20px 20px 150px 20px; 
         background: #FFF9E6; 
+        transition: background-color 0.8s ease, color 0.8s ease;
       }
-      h1   { color: #1F4E79; }
-      h2   { color: #2E75B6; border-bottom: 2px solid #2E75B6; }
-      p    { line-height: 1.6; }
+      h1   { color: #1F4E79; transition: color 0.8s ease; }
+      h2   { color: #2E75B6; border-bottom: 2px solid #2E75B6; transition: color 0.8s ease, border-color 0.8s ease; }
+      p    { line-height: 1.6; transition: color 0.8s ease; }
 
-      /* Link list formatting */
       .project-links {
         list-style-type: none;
         padding-left: 0;
@@ -28,12 +28,12 @@
         color: #2E75B6;
         text-decoration: none;
         font-weight: bold;
+        transition: color 0.8s ease;
       }
       .project-links a:hover {
         text-decoration: underline;
       }
 
-      /* Fixed 100% Code-Generated Cat Element */
       .bouncing-cat {
         position: fixed;
         width: 80px !important; 
@@ -51,7 +51,6 @@
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       }
 
-      /* Control Board Container (Score + Toggle Switch) */
       #control-panel {
         position: fixed;
         top: 10px;
@@ -68,9 +67,9 @@
         display: flex;
         align-items: center;
         gap: 20px;
+        transition: opacity 0.5s ease;
       }
 
-      /* Simple Toggle Checkbox Switch Styling */
       .switch-label {
         display: flex;
         align-items: center;
@@ -82,7 +81,6 @@
         border-radius: 10px;
       }
 
-      /* Bottom Right Action Button styling */
       #mode-toggle-btn {
         position: fixed;
         bottom: 20px;
@@ -97,7 +95,7 @@
         cursor: pointer;
         z-index: 10000;
         box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        transition: background-color 0.3s, transform 0.2s;
+        transition: background-color 0.3s, transform 0.2s, opacity 0.5s;
       }
 
       #mode-toggle-btn:hover {
@@ -108,7 +106,6 @@
         background-color: #d9534f;
       }
 
-      /* Particle element styling for the explosion effect */
       .explosion-particle {
         position: fixed;
         width: 8px;
@@ -119,7 +116,6 @@
         z-index: 9999;
       }
 
-      /* Scroll-revealed Image Layout */
       .scroll-avatar-container {
         margin-top: 80px;
         text-align: center;
@@ -130,11 +126,79 @@
         height: auto;
         border-radius: 10px;
       }
+
+      #secret-door {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 70px;
+        height: 85px;
+        background: #1F4E79;
+        border: 3px solid #2E75B6;
+        border-radius: 10px 10px 0 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        z-index: 10001;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        user-select: none;
+        transition: background 0.5s, border-color 0.5s, transform 0.3s;
+      }
+
+      #door-lock-status {
+        font-size: 14px;
+        margin-top: 2px;
+      }
+
+      #secret-key {
+        position: fixed;
+        bottom: 25px;
+        left: 25px;
+        width: 60px;
+        height: 60px;
+        background: #2E75B6;
+        border: 3px solid #1F4E79;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        z-index: 10002;
+        cursor: grab;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        user-select: none;
+        touch-action: none;
+        opacity: 0;
+        transform: translateY(50px);
+        pointer-events: none;
+        transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.2s;
+      }
+
+      #secret-key.visible {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      #secret-key:active {
+        cursor: grabbing;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+      }
+
+      body.dark-void {
+        background-color: #000000 !important;
+        color: #00FF66 !important;
+      }
+      body.dark-void h1 { color: #00FF66 !important; text-shadow: 0 0 10px #00FF66; }
+      body.dark-void h2 { color: #00FFCC !important; border-color: #00FFCC !important; text-shadow: 0 0 8px #00FFCC; }
+      body.dark-void p { color: #E0E0E0 !important; }
+      body.dark-void .project-links a { color: #00FFCC !important; }
     </style>
   </head>
   <body>
 
-    <!-- Control Panel: Score Tracker + Game Toggle UI -->
     <div id="control-panel">
       <div>Cats Exploded: <span id="score-val">0</span></div>
       <label class="switch-label">
@@ -142,6 +206,13 @@
         Enable Cats 🐈
       </label>
     </div>
+
+    <div id="secret-door">
+      <span>🚪</span>
+      <span id="door-lock-status">🔒</span>
+    </div>
+
+    <div id="secret-key">🔑</div>
 
     <h1>Hi, I'm Victor Aguilar!</h1>
  
@@ -157,28 +228,116 @@
     <h2>My Projects</h2>
     <ul class="project-links">
       <li>GitHub: <a href="https://github.com" target="_blank">VICTOR0240</a></li>
-      <li>Tinkercad: <a href="https://www.tinkercad.com/things/2LVU4KrAkyH-human" target="_blank">3D Human Model</a></li>
-      <li>Code.org: <a href="https://studio.code.org/projects/applab/4112e6cb-0e24-4dc3-934c-27ea6569daf1" target="_blank">App Lab Project</a></li>
+      <li>Tinkercad: <a href="https://tinkercad.com" target="_blank">3D Human Model</a></li>
+      <li>Code.org: <a href="https://code.org" target="_blank">App Lab Project</a></li>
     </ul>
 
-    <!-- Clean Scroll Section: Only the image shows when scrolling down -->
     <div class="scroll-avatar-container">
       <img src="character.png" alt="Victor's Drawing">
     </div>
 
-    <!-- Bottom Right Action Button -->
     <button id="mode-toggle-btn">Switch to Explode Mode 💥</button>
-
-    <!-- Multi-Cat Physics & Game Logic -->
     <script>
       let isExplodeMode = false;
       let catsEnabled = false; 
       let score = 0;
       let globalSpeedMultiplier = 1.0; 
+      let isVoidActive = false;
 
       const modeBtn = document.getElementById('mode-toggle-btn');
       const scoreVal = document.getElementById('score-val');
       const catToggle = document.getElementById('cat-master-toggle');
+      
+      const secretKey = document.getElementById('secret-key');
+      const secretDoor = document.getElementById('secret-door');
+      const lockStatus = document.getElementById('door-lock-status');
+
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 150 && !isVoidActive) {
+          secretKey.classList.add('visible');
+        } else if (window.scrollY <= 150 && !secretKey.classList.contains('dragging')) {
+          secretKey.classList.remove('visible');
+        }
+      });
+
+      let offsetX = 0, offsetY = 0;
+
+      function startDrag(e) {
+        if (isVoidActive) return;
+        secretKey.classList.add('dragging');
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        
+        const rect = secretKey.getBoundingClientRect();
+        offsetX = clientX - rect.left;
+        offsetY = clientY - rect.top;
+
+        document.addEventListener('mousemove', dragMove);
+        document.addEventListener('touchmove', dragMove, { passive: false });
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchend', endDrag);
+      }
+
+      function dragMove(e) {
+        e.preventDefault(); 
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        
+        if (!clientX || !clientY) return;
+
+        let x = clientX - offsetX;
+        let y = clientY - offsetY;
+
+        secretKey.style.left = x + 'px';
+        secretKey.style.top = y + 'px';
+        secretKey.style.bottom = 'auto'; 
+      }
+
+      function endDrag() {
+        document.removeEventListener('mousemove', dragMove);
+        document.removeEventListener('touchmove', dragMove);
+        document.removeEventListener('mouseup', endDrag);
+        document.removeEventListener('touchend', endDrag);
+        
+        secretKey.classList.remove('dragging');
+
+        const keyRect = secretKey.getBoundingClientRect();
+        const doorRect = secretDoor.getBoundingClientRect();
+
+        const hit = !(keyRect.right < doorRect.left || 
+                      keyRect.left > doorRect.right || 
+                      keyRect.bottom < doorRect.top || 
+                      keyRect.top > doorRect.bottom);
+
+        if (hit) {
+          triggerDoorUnlock();
+        } else {
+          secretKey.style.left = '25px';
+          secretKey.style.top = 'auto';
+          secretKey.style.bottom = '25px';
+        }
+      }
+
+      secretKey.addEventListener('mousedown', startDrag);
+      secretKey.addEventListener('touchstart', startDrag);
+
+      function triggerDoorUnlock() {
+        isVoidActive = true;
+        document.body.classList.add('dark-void');
+        lockStatus.textContent = '🔓';
+        secretDoor.style.background = '#00FF66';
+        secretDoor.style.borderColor = '#00FFCC';
+        secretDoor.style.transform = 'scale(1.1)';
+        
+        secretKey.remove();
+        catsEnabled = false;
+        catToggle.checked = false;
+        document.querySelectorAll('.bouncing-cat').forEach(cat => cat.remove());
+        document.getElementById('control-panel').style.opacity = '0';
+        document.getElementById('control-panel').style.pointerEvents = 'none';
+        modeBtn.style.opacity = '0';
+        modeBtn.style.pointerEvents = 'none';
+      }
 
       modeBtn.addEventListener('click', () => {
         isExplodeMode = !isExplodeMode;
@@ -192,6 +351,7 @@
       });
 
       catToggle.addEventListener('change', () => {
+        if (isVoidActive) return;
         catsEnabled = catToggle.checked;
         if (!catsEnabled) {
           document.querySelectorAll('.bouncing-cat').forEach(cat => cat.remove());
@@ -223,10 +383,7 @@
           let opacity = 1;
 
           function animateParticle() {
-            pX += vX;
-            pY += vY;
-            vY += 0.1; 
-            opacity -= 0.02;
+            pX += vX; pY += vY; vY += 0.1; opacity -= 0.02;
             particle.style.left = pX + 'px';
             particle.style.top = pY + 'px';
             particle.style.opacity = opacity;
@@ -245,7 +402,6 @@
         constructor(startX = null, startY = null) {
           if (!catsEnabled) return;
 
-          // Replaced standard image generation logic completely with an isolated text-node layout block
           this.element = document.createElement('div');
           this.element.className = 'bouncing-cat';
           this.element.innerHTML = '🐈';
@@ -265,15 +421,19 @@
           this.element.addEventListener('click', (e) => {
             if (isExplodeMode) {
               const rect = this.element.getBoundingClientRect();
-              const clickX = rect.left + 40;
-              const clickY = rect.top + 40;
-              triggerExplosion(clickX, clickY);
+              triggerExplosion(rect.left + this.catWidth / 2, rect.top + this.catHeight / 2);
               this.element.remove();
               score++;
               scoreVal.textContent = score;
-              globalSpeedMultiplier += 0.15; 
+              
+              if (catsEnabled) {
+                setTimeout(() => new EngineSpawner(), 200);
+                setTimeout(() => new EngineSpawner(), 400);
+              }
             } else {
-              new EngineSpawner(this.posX, this.posY);
+              if (catsEnabled) {
+                new EngineSpawner(this.posX + 20, this.posY + 20);
+              }
             }
           });
 
@@ -282,34 +442,24 @@
         }
 
         animate() {
-          const move = () => {
-            if (!this.element.parentNode || !catsEnabled) {
-              this.element.remove();
-              return;
-            }
-
-            const screenWidth = window.innerWidth;
-            const screenHeight = window.innerHeight;
+          const updatePhysics = () => {
+            if (!catsEnabled || !this.element.parentElement) return;
 
             this.posX += this.baseSpeedX * globalSpeedMultiplier;
             this.posY += this.baseSpeedY * globalSpeedMultiplier;
 
-            if (this.posX + this.catWidth >= screenWidth || this.posX <= 0) {
-              this.baseSpeedX = -this.baseSpeedX;
-              this.posX = Math.max(0, Math.min(this.posX, screenWidth - this.catWidth));
-            }
+            if (this.posX <= 0) { this.posX = 0; this.baseSpeedX *= -1; }
+            else if (this.posX >= window.innerWidth - this.catWidth) { this.posX = window.innerWidth - this.catWidth; this.baseSpeedX *= -1; }
 
-            if (this.posY + this.catHeight >= screenHeight || this.posY <= 0) {
-              this.baseSpeedY = -this.baseSpeedY;
-              this.posY = Math.max(0, Math.min(this.posY, screenHeight - this.catHeight));
-            }
+            if (this.posY <= 0) { this.posY = 0; this.baseSpeedY *= -1; }
+            else if (this.posY >= window.innerHeight - this.catHeight) { this.posY = window.innerHeight - this.catHeight; this.baseSpeedY *= -1; }
 
             this.element.style.left = this.posX + 'px';
             this.element.style.top = this.posY + 'px';
 
-            requestAnimationFrame(move);
+            requestAnimationFrame(updatePhysics);
           };
-          requestAnimationFrame(move);
+          requestAnimationFrame(updatePhysics);
         }
       }
     </script>
