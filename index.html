@@ -33,15 +33,22 @@
         text-decoration: underline;
       }
 
-      /* Styles for the bouncing cat class */
+      /* Fixed 100% Code-Generated Cat Element */
       .bouncing-cat {
         position: fixed;
-        width: 100px !important; 
-        height: 100px !important;
-        object-fit: contain;
+        width: 80px !important; 
+        height: 80px !important;
+        background-color: #2E75B6;
+        border: 4px solid #1F4E79;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 45px;
         z-index: 9999;
         cursor: pointer; 
         user-select: none; 
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       }
 
       /* Control Board Container (Score + Toggle Switch) */
@@ -190,7 +197,7 @@
           document.querySelectorAll('.bouncing-cat').forEach(cat => cat.remove());
         } else {
           if (document.querySelectorAll('.bouncing-cat').length === 0) {
-            new CatSpawner();
+            new EngineSpawner();
           }
         }
       });
@@ -234,17 +241,17 @@
         }
       }
 
-      class CatSpawner {
+      class EngineSpawner {
         constructor(startX = null, startY = null) {
           if (!catsEnabled) return;
 
-          this.element = document.createElement('img');
+          // Replaced standard image generation logic completely with an isolated text-node layout block
+          this.element = document.createElement('div');
           this.element.className = 'bouncing-cat';
-          this.element.alt = 'Dancing Cat';
+          this.element.innerHTML = '🐈';
           
-          // Hardcoded layout boundary values to eliminate rendering checks entirely
-          this.catWidth = 100;
-          this.catHeight = 100;
+          this.catWidth = 80;
+          this.catHeight = 80;
 
           this.baseSpeedX = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
           this.baseSpeedY = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
@@ -258,27 +265,17 @@
           this.element.addEventListener('click', (e) => {
             if (isExplodeMode) {
               const rect = this.element.getBoundingClientRect();
-              const clickX = rect.left + 50;
-              const clickY = rect.top + 50;
+              const clickX = rect.left + 40;
+              const clickY = rect.top + 40;
               triggerExplosion(clickX, clickY);
               this.element.remove();
               score++;
               scoreVal.textContent = score;
               globalSpeedMultiplier += 0.15; 
             } else {
-              new CatSpawner(this.posX, this.posY);
+              new EngineSpawner(this.posX, this.posY);
             }
           });
-
-          // Filename Failure Safety Loop
-          // Tries cat.gif, falls back to cat.GIF, falls back to cat.png
-          this.element.src = 'cat.gif';
-          let attempt = 0;
-          this.element.onerror = () => {
-            attempt++;
-            if (attempt === 1) this.element.src = 'cat.GIF';
-            if (attempt === 2) this.element.src = 'cat.png';
-          };
 
           document.body.appendChild(this.element);
           this.animate();
@@ -315,3 +312,6 @@
           requestAnimationFrame(move);
         }
       }
+    </script>
+  </body>
+</html>
