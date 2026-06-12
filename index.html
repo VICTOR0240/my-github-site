@@ -36,12 +36,12 @@
       /* Styles for the bouncing cat class */
       .bouncing-cat {
         position: fixed;
-        width: 100px; 
-        height: auto;
+        width: 100px !important; 
+        height: 100px !important;
+        object-fit: contain;
         z-index: 9999;
         cursor: pointer; 
         user-select: none; 
-        transition: transform 0.1s ease;
       }
 
       /* Control Board Container (Score + Toggle Switch) */
@@ -164,18 +164,15 @@
 
     <!-- Multi-Cat Physics & Game Logic -->
     <script>
-      // Game state trackers
       let isExplodeMode = false;
       let catsEnabled = false; 
       let score = 0;
       let globalSpeedMultiplier = 1.0; 
 
-      // Elements
       const modeBtn = document.getElementById('mode-toggle-btn');
       const scoreVal = document.getElementById('score-val');
       const catToggle = document.getElementById('cat-master-toggle');
 
-      // Toggle functionality for explode vs spawn mode
       modeBtn.addEventListener('click', () => {
         isExplodeMode = !isExplodeMode;
         if (isExplodeMode) {
@@ -187,13 +184,10 @@
         }
       });
 
-      // Simple click/change safety switch
       catToggle.addEventListener('change', () => {
         catsEnabled = catToggle.checked;
-        
         if (!catsEnabled) {
-          const existingCats = document.querySelectorAll('.bouncing-cat');
-          existingCats.forEach(cat => cat.remove());
+          document.querySelectorAll('.bouncing-cat').forEach(cat => cat.remove());
         } else {
           if (document.querySelectorAll('.bouncing-cat').length === 0) {
             new CatSpawner();
@@ -201,16 +195,13 @@
         }
       });
 
-      // Helper function to create an HTML particle blast explosion
       function triggerExplosion(x, y) {
         const particleCount = 20;
         for (let i = 0; i < particleCount; i++) {
           const particle = document.createElement('div');
           particle.className = 'explosion-particle';
-          
           const colors = ['#ff5722', '#ff9800', '#ffeb3b', '#e91e63'];
           particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-          
           document.body.appendChild(particle);
 
           particle.style.left = x + 'px';
@@ -229,7 +220,6 @@
             pY += vY;
             vY += 0.1; 
             opacity -= 0.02;
-
             particle.style.left = pX + 'px';
             particle.style.top = pY + 'px';
             particle.style.opacity = opacity;
@@ -244,7 +234,6 @@
         }
       }
 
-      // Class to manage independent physics for each cat instance
       class CatSpawner {
         constructor(startX = null, startY = null) {
           if (!catsEnabled) return;
@@ -253,11 +242,13 @@
           this.element.className = 'bouncing-cat';
           this.element.alt = 'Dancing Cat';
           
-          // Added random directions immediately
+          // Hardcoded layout boundary values to eliminate rendering checks entirely
+          this.catWidth = 100;
+          this.catHeight = 100;
+
           this.baseSpeedX = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
           this.baseSpeedY = (Math.random() * 3 + 1) * (Math.random() < 0.5 ? 1 : -1);
 
-          // Fixed: Set spawn point BEFORE image file finishes loading to prevent rendering at 0,0
           this.posX = startX !== null ? startX : Math.random() * (window.innerWidth - 120);
           this.posY = startY !== null ? startY : Math.random() * (window.innerHeight - 120);
           
@@ -267,12 +258,10 @@
           this.element.addEventListener('click', (e) => {
             if (isExplodeMode) {
               const rect = this.element.getBoundingClientRect();
-              const clickX = rect.left + rect.width / 2;
-              const clickY = rect.top + rect.height / 2;
-
+              const clickX = rect.left + 50;
+              const clickY = rect.top + 50;
               triggerExplosion(clickX, clickY);
               this.element.remove();
-
               score++;
               scoreVal.textContent = score;
               globalSpeedMultiplier += 0.15; 
@@ -281,14 +270,18 @@
             }
           });
 
-          // Fixed: Wait until the image payload loads before triggering animation
-          this.element.onload = () => {
-            this.animate();
+          // Filename Failure Safety Loop
+          // Tries cat.gif, falls back to cat.GIF, falls back to cat.png
+          this.element.src = 'cat.gif';
+          let attempt = 0;
+          this.element.onerror = () => {
+            attempt++;
+            if (attempt === 1) this.element.src = 'cat.GIF';
+            if (attempt === 2) this.element.src = 'cat.png';
           };
 
-          // Set file source last
-          this.element.src = 'cat.gif';
           document.body.appendChild(this.element);
+          this.animate();
         }
 
         animate() {
@@ -298,31 +291,27 @@
               return;
             }
 
-            // Fixed: Set hard default dimensions (100) if browser returns 0
-            const catWidth = this.element.offsetWidth || 100;
-            const catHeight = this.element.offsetHeight || 100;
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
 
             this.posX += this.baseSpeedX * globalSpeedMultiplier;
             this.posY += this.baseSpeedY * globalSpeedMultiplier;
 
-            if (this.posX + catWidth >= screenWidth || this.posX <= 0) {
+            if (this.posX + this.catWidth >= screenWidth || this.posX <= 0) {
               this.baseSpeedX = -this.baseSpeedX;
-              this.posX = Math.max(0, Math.min(this.posX, screenWidth - catWidth));
+              this.posX = Math.max(0, Math.min(this.posX, screenWidth - this.catWidth));
             }
 
-            if (this.posY + catHeight >= screenHeight || this.posY <= 0) {
-this.baseSpeedY = -this.baseSpeedY;
-this.posY = Math.max(0, Math.min(this.posY, screenHeight - catHeight));
-}
+            if (this.posY + this.catHeight >= screenHeight || this.posY <= 0) {
+              this.baseSpeedY = -this.baseSpeedY;
+              this.posY = Math.max(0, Math.min(this.posY, screenHeight - this.catHeight));
+            }
 
-this.element.style.left = this.posX + 'px';
-this.element.style.top = this.posY + 'px';
+            this.element.style.left = this.posX + 'px';
+            this.element.style.top = this.posY + 'px';
 
-requestAnimationFrame(move);
-};
-
-requestAnimationFrame(move);
-}
-}
+            requestAnimationFrame(move);
+          };
+          requestAnimationFrame(move);
+        }
+      }
