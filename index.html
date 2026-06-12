@@ -16,6 +16,23 @@
       h2   { color: #2E75B6; border-bottom: 2px solid #2E75B6; }
       p    { line-height: 1.6; }
 
+      /* Link list formatting */
+      .project-links {
+        list-style-type: none;
+        padding-left: 0;
+      }
+      .project-links li {
+        margin-bottom: 10px;
+      }
+      .project-links a {
+        color: #2E75B6;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      .project-links a:hover {
+        text-decoration: underline;
+      }
+
       /* Styles for the bouncing cat class */
       .bouncing-cat {
         position: fixed;
@@ -114,7 +131,6 @@
     <div id="control-panel">
       <div>Cats Exploded: <span id="score-val">0</span></div>
       <label class="switch-label">
-        <!-- Removed "checked" attribute so it starts disabled -->
         <input type="checkbox" id="cat-master-toggle">
         Enable Cats 🐈
       </label>
@@ -131,10 +147,13 @@
     <h2>My Goals for This Course</h2>
     <p> I want to build a digital saxophone. </p>
  
-    <h2>My GitHub</h2>
-    <p>Check out my projects: 
-      <a href="https://github.com"> VICTOR0240 </a>
-    </p>
+    <h2>My Projects</h2>
+    <ul class="project-links">
+      <li>GitHub: <a href="https://github.com/VICTOR0240" target="_blank">VICTOR0240</a></li>
+      <li>Tinkercad: <a href="https://www.tinkercad.com/things/2LVU4KrAkyH-human" target="_blank">3D Human Model</a></li>
+      <li>
+        : <a href="https://studio.code.org/projects/applab/4112e6cb-0e24-4dc3-934c-27ea6569daf1" target="_blank">App Lab Project</a></li>
+    </ul>
 
     <!-- Clean Scroll Section: Only the image shows when scrolling down -->
     <div class="scroll-avatar-container">
@@ -148,7 +167,7 @@
     <script>
       // Game state trackers
       let isExplodeMode = false;
-      let catsEnabled = false; // Changed to false initially
+      let catsEnabled = false; 
       let score = 0;
       let globalSpeedMultiplier = 1.0; 
 
@@ -174,11 +193,9 @@
         catsEnabled = e.target.checked;
         
         if (!catsEnabled) {
-          // Hide and clear active elements from the DOM if turned off
           const existingCats = document.querySelectorAll('.bouncing-cat');
           existingCats.forEach(cat => cat.remove());
         } else {
-          // Spawn a fresh cat back onto the screen if toggled back on
           new CatSpawner();
         }
       });
@@ -229,7 +246,6 @@
       // Class to manage independent physics for each cat instance
       class CatSpawner {
         constructor(startX = null, startY = null) {
-          // Block initialization if the master toggle is checked off
           if (!catsEnabled) return;
 
           this.element = document.createElement('img');
@@ -269,7 +285,6 @@
 
         animate() {
           const move = () => {
-            // Terminate loop immediately if elements are toggled off or broken out of DOM
             if (!this.element.parentNode || !catsEnabled) {
               this.element.remove();
               return;
@@ -302,11 +317,6 @@
           requestAnimationFrame(move);
         }
       }
-
-      window.addEventListener('DOMContentLoaded', () => {
-        // Disabled by default on initial page launch
-        // Cats will now properly appear only when "Enable Cats" is checked
-      });
-    </script>
-  </body>
-</html>
+window.addEventListener('DOMContentLoaded', () => {
+  // Disabled by default on launch
+  // });
