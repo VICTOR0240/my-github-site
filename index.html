@@ -166,7 +166,7 @@
     <script>
       // Game state trackers
       let isExplodeMode = false;
-      let catsEnabled = false; 
+      let catsEnabled = false; // Correctly disabled by default on load
       let score = 0;
       let globalSpeedMultiplier = 1.0; 
 
@@ -187,15 +187,15 @@
         }
       });
 
-      // Switched event to 'click' to guarantee instant response across all browsers
-      catToggle.addEventListener('click', () => {
+      // Fixed: Listens directly to checkbox state changes to spawn immediately
+      catToggle.addEventListener('change', () => {
         catsEnabled = catToggle.checked;
         
         if (!catsEnabled) {
           const existingCats = document.querySelectorAll('.bouncing-cat');
           existingCats.forEach(cat => cat.remove());
         } else {
-          // Double-check no phantom cats exist before building a new one
+          // If toggled ON and no cats exist on screen, force spawn one instantly
           if (document.querySelectorAll('.bouncing-cat').length === 0) {
             new CatSpawner();
           }
@@ -252,12 +252,7 @@
 
           this.element = document.createElement('img');
           this.element.className = 'bouncing-cat';
-          
-          // Fallback logic: If your local 'cat.gif' is missing, it automatically loads a backup animated cat 
-          this.element.src = 'cat.gif';
-          this.element.onerror = () => {
-            this.element.src = 'https://giphy.com';
-          };
+          this.element.src = 'cat.gif'; // Uses your working local file perfectly
           this.element.alt = 'Dancing Cat';
           
           this.posX = startX !== null ? startX : Math.random() * (window.innerWidth - 100);
@@ -308,12 +303,12 @@
             if (this.posX + catWidth >= screenWidth || this.posX <= 0) {
               this.baseSpeedX = -this.baseSpeedX;
               this.posX = Math.max(0, Math.min(this.posX, screenWidth - catWidth));
-}
+            }
 
-if (this.posY + catHeight >= screenHeight || this.posY <= 0) {
-  this.baseSpeedY = -this.baseSpeedY;
-  this.posY = Math.max(0, Math.min(this.posY, screenHeight - catHeight));
-}
+            if (this.posY + catHeight >= screenHeight || this.posY <= 0) {
+              this.baseSpeedY = -this.baseSpeedY;
+              this.posY = Math.max(0, Math.min(this.posY, screenHeight - catHeight));
+            }
 
 this.element.style.left = this.posX + 'px';
 this.element.style.top = this.posY + 'px';
